@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  emqx1:
+    image: emqx/emqx
+    environment:
+    - "EMQX_NAME=emqx"
+    - "EMQX_HOST=node1.emqx.io"
+    - "EMQX_CLUSTER__DISCOVERY=static"
+    - "EMQX_CLUSTER__STATIC__SEEDS=emqx@node1.emqx.io, emqx@node2.emqx.io"
+    - "EMQX_ZONE__EXTERNAL__RETRY_INTERVAL=2s"
+    - "EMQX_MQTT__MAX_TOPIC_ALIAS=10"
+    volumes:
+        - /emqx-data/emqx.lic:/opt/emqx/etc/emqx.lic
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx_ctl", "status"]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+
+  emqx2:
+    image: emqx/emqx
+    environment:
+    - "EMQX_NAME=emqx"
+    - "EMQX_HOST=node2.emqx.io"
+    - "EMQX_CLUSTER__DISCOVERY=static"
+    - "EMQX_CLUSTER__STATIC__SEEDS=emqx@node1.emqx.io, emqx@node2.emqx.io"
+    - "EMQX_ZONE__EXTERNAL__RETRY_INTERVAL=2s"
+    - "EMQX_MQTT__MAX_TOPIC_ALIAS=10"
+    volumes:
+        - /emqx-data/emqx.lic:/opt/emqx/etc/emqx.lic
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx_ctl", "status"]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+    
